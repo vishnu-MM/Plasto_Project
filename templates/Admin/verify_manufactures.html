@@ -1,0 +1,46 @@
+{% extends "Admin/Admin_Home.html" %}
+{% block body %}
+<body>
+<!--<form id="form1" name="form1" method="post" action="/verifing_manufactiores_post">-->
+   <!--<table border="0" class="table table-borderless table-striped table-hover">-->
+    <!--<tr>-->
+      <!--<td> <input type="text" name="textfield" id="textfield" class="form-control" /> </td>-->
+      <!--<td> <input type="submit" name="button" id="button" value="Search" class="btn btn-info" /> </td>-->
+    <!--</tr>-->
+  <!--</table>-->
+
+<!--</form>-->
+<table border="1" class="table table-borderless table-striped table-hover">
+  <tr>
+    <td>#</td>
+    <td>Company Name</td>
+    <td>Propriator Name</td>
+    <td>Email</td>
+    <td>Phone</td>
+    <td>Address</td>
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+  </tr>
+   {%for i in data %}
+  <tr>
+    <td>{{ loop.index }}</td>
+    <td> {{i['c_name']}} </td>
+    <td> {{i['prop_name']}} </td>
+    <td> {{i['email']}} </td>
+    <td> {{i['phone']}} </td>
+    <td>
+      {{i['place']}},
+      {{i['post']}},
+      {{i['pin']}},
+    </td>
+    <td><a href="#" class="btn btn-danger">Trace</a></td>
+      <td> <a href="/reject_manufactures/{{ i['man_id'] }}" class="btn btn-danger">Reject</a></td><br>
+   <td><a href="/accept_manufactures/{{ i['man_id'] }}" class="btn btn-danger">Approve </a></td>
+
+
+  </tr>
+   {%endfor%}
+</table>
+</body>
+{% endblock %}

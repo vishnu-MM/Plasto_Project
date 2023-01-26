@@ -1,0 +1,39 @@
+{% extends "Admin/Admin_Home.html" %}
+{% block body %}
+<body>
+<!--<form id="form1" name="form1" >-->
+    <!--<table border="0" class="table table-borderless table-striped table-hover">-->
+        <!--<tr>-->
+            <!--<td> <input type="text" name="textfield" id="textfield" class="form-control"/> </td>-->
+            <!--<td> <input type="submit" name="button" id="button" value="Search" class="btn btn-info"/> </td>-->
+        <!--</tr>-->
+<!--</table>-->
+<table border="0" class="table table-borderless table-striped table-hover">
+  <tr>
+    <td><h3>#</h3></td>
+    <td>Name</td>
+    <td>Proprietor</td>
+    <td>email</td>
+    <td>Phone</td>
+    <td>Address</td>
+    <td>&nbsp;</td>
+
+  </tr>
+
+     {% for i in data %}
+  <tr>
+    <td>{{loop.index}}</td>
+    <td> {{i['c_name']}}</td>
+    <td> {{i['prop_name']}}</td>
+    <td> {{i['email']}}</td>
+    <td> {{i['phone']}}</td>
+    <td> {{i['place']}} <br>
+         {{i['pin']}} <br>
+         {{i['pin']}}<br> </td>
+    <td><p><a href="#" class="btn btn-danger">Block</a></p>
+    <!--<p><a href="#" class="btn btn-danger">Trace</a></p></td>-->
+  </tr>
+     {% endfor %}
+</table>
+</body>
+{% endblock %}
