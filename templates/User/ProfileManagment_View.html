@@ -1,4 +1,4 @@
-{% extends 'user/user_Home.html' %}
+{% extends 'user/Profile.html' %}
 {% block body %}
 
 <body>
@@ -6,12 +6,16 @@
   <!--<input type="hidden" name="id" value="{{data['man_lid']}}">-->
 <table border="0" class="table table-borderless table-striped table-hover">
   <tr>
+    <td>Card No</td>
+    <td colspan="2"> {{data['User_id']}} </td>
+  </tr>
+  <tr>
     <td>UserName</td>
     <td colspan="2"> {{data['name']}} </td>
   </tr>
   <tr>
-    <td>Proprietor Name</td>
-    <td colspan="2"> {{data['propreitir_name']}} </td>
+    <td>Age</td>
+    <td colspan="2"> {{data['age']}} </td>
   </tr>
   <tr>
     <td>Phone</td>

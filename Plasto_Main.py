@@ -38,9 +38,6 @@ def login_post():
 
 
 
-#==================================================================================================================ADMIN
-
-
 
 @app.route('/logout')
 def logout():
@@ -49,10 +46,13 @@ def logout():
 
 
 
+#==================================================================================================================ADMIN
+
+
 @app.route('/Home')
 def Home():
     if session['log']=='lin':
-        return render_template("Admin/Admin_Home.html")
+        return render_template("Admin/index.html")
     else:
         return "<script>alert('Log out');window.location='/'</script>"
 
@@ -176,7 +176,7 @@ def sign_up_post():
 @app.route('/Home_Retailer')
 def Home_Retailer():
     if session['log'] == 'lin':
-        return render_template('Retailer/retailer_Home.html')
+        return render_template('Retailer/index.html')
     else:
         return "<script>alert('Log out');window.location='/'</script>"
 
@@ -217,7 +217,7 @@ def add_user_data_post():
 @app.route('/Home_Manufactures')
 def Home_Manufactures():
     if session['log']=='lin':
-        return render_template("Manufacturer/manufacturer_Home.html")
+        return render_template("Manufacturer/index.html")
     else:
         return "<script>alert('Log out');window.location='/'</script>"
 
@@ -348,7 +348,7 @@ def delete_product(id):
 @app.route('/user_home')
 def user_home():
     if session['log'] == 'lin':
-        return  render_template('User/user_Home.html')
+        return  render_template('User/index.html')
     else:
         return "<script>alert('Log out');window.location='/'</script>"
 
@@ -424,7 +424,7 @@ def profile_managment_post():
     qry = "  UPDATE `user` SET `name`='"+usrname+"',`age`='"+age+"',`email`='"+ema+"',`phone`='"+ph+"',`place`='"+place+"',`post`='"+pst+"',`pin`='"+pin+"' WHERE `User_lid`='"+str(session['lid'])+"'  "
     res = db.update(qry)
     if session['log'] == 'lin':
-        return redirect("/profile_managment")
+        return redirect("/profile_managment_view")
     else:
         return "<script>alert('Log out');window.location='/'</script>"
 

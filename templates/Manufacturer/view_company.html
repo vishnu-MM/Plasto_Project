@@ -1,4 +1,4 @@
-{% extends "Manufacturer/manufacturer_Home.html" %}
+{% extends "Manufacturer/Profile.html" %}
 {% block body %}
 <body>
 <form id="form1" name="form1" method="post" action="">
@@ -14,7 +14,7 @@
     </tr>
     <tr>
       <td>Address</td>
-      <td>{{data['place']}}<br>{{data['post']}}</td>
+      <td>{{data['place']}} , {{data['post']}}</td>
     </tr>
     <tr>
       <td>pin</td>
