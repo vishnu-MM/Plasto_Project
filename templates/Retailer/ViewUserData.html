@@ -1,0 +1,26 @@
+{% extends "Retailer/retailer_Home.html" %}
+{% block body %}
+<body>
+<table class="table table-borderless table-striped table-hover">
+  <tr>
+    <td width="9">#</td>
+    <td width="43">Name</td>
+     <td width="44">Phone</td>
+    <td width="63">Card No</td>
+    <td width="171"> product</td>
+    <td width="171"> product Type</td>
+
+  </tr>
+  {% for i in data %}
+  <tr>
+    <td> {{loop.index}} </td>
+    <td> {{i['name']}} </td>
+    <td> {{i['phone']}} </td>
+    <td>{{i['User_id']}} </td>
+    <td>{{i['p_name']}} </td>
+    <td>{{i['TypeName']}} </td>
+  </tr>
+  {% endfor %}
+</table>
+</body>
+{% endblock %}

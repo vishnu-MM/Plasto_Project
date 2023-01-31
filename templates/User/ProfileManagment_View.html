@@ -1,0 +1,46 @@
+{% extends 'user/user_Home.html' %}
+{% block body %}
+
+<body>
+<form id="form1" name="form1" method="post" action="/profile_managment_view_post">
+  <!--<input type="hidden" name="id" value="{{data['man_lid']}}">-->
+<table border="0" class="table table-borderless table-striped table-hover">
+  <tr>
+    <td>UserName</td>
+    <td colspan="2"> {{data['name']}} </td>
+  </tr>
+  <tr>
+    <td>Proprietor Name</td>
+    <td colspan="2"> {{data['propreitir_name']}} </td>
+  </tr>
+  <tr>
+    <td>Phone</td>
+    <td colspan="2"> {{data['phone']}} </td>
+  </tr>
+  <tr>
+    <td>E-mail</td>
+    <td colspan="2"> {{data['email']}} </td>
+  </tr>
+  <tr>
+    <td rowspan="3">Address</td>
+    <td>Place</td>
+    <td> {{data['place']}} </td>
+  </tr>
+  <tr>
+    <td>Post</td>
+    <td> {{data['post']}} </td>
+  </tr>
+  <tr>
+    <td>Pin</td>
+    <td> {{data['pin']}} </td>
+  </tr>
+  <tr>
+    <td colspan="4">
+      <a href="/profile_managment#about" class="btn btn-danger">Edit</a>
+    </td>
+  </tr>
+</table>
+</form>
+
+</body>
+{% endblock %}

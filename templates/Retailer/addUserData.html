@@ -1,0 +1,32 @@
+{% extends "Retailer/retailer_Home.html" %}
+{% block body %}
+<body><form action="/add_user_data_post" method="post">
+    <table class="table table-borderless table-striped table-hover">
+  <tr>
+    <td>Card No</td>
+    <td><label>
+      <input type="text" name="textfield" id="textfield" />
+    </label></td>
+  </tr>
+  <tr>
+      <td>Product ID</td>
+      <td>
+        <input type="text" name="textfield2" id="textfield1" />
+      </td>
+      </tr>
+      <td>Product Type</td>
+      <td> <select  name="select">
+          {% for i in data %}
+      <option value="{{i['ptId']}}">{{i['TypeName']}}</option>
+          {% endfor %}
+      </select></td>
+    </tr>
+    <tr>
+    <td colspan="2">
+        <input name="button1" value="Finish" type="submit" class="btn btn-info" />
+        <!--<a href="/add_user_data#about"  class="btn btn-danger">Next</a>-->
+    </tr>
+</table>
+</form>
+</body>
+{% endblock %}

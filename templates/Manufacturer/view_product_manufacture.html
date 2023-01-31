@@ -1,0 +1,23 @@
+{% extends "Manufacturer/manufacturer_Home.html" %}
+{% block body %}
+<body>
+<form id="form1" name="form1" method="post" action="">
+  <table class="table table-borderless table-striped table-hover">
+    <tr>
+      <td>Product Name</td>
+      <td>Product Type</td>
+         <td>&nbsp;</td>
+      <td>&nbsp;</td>
+    </tr>
+      {% for i in data %}
+    <tr>
+      <td>{{i['p_name']}}</td>
+      <td>{{i['TypeName']}}</td>
+        <td><a href="/edit_product/{{ i['pid'] }}#about" class="btn btn-danger">Edit</a></td>
+      <td><a href="/delete_product/{{ i['pid'] }}#about" onclick="return confirm('Do you want to delete this?')" class="btn btn-danger">Delete</a></td>
+    </tr>
+      {% endfor %}
+  </table>
+</form>
+</body>
+{% endblock%}

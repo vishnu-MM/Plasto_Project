@@ -1,0 +1,20 @@
+
+<body>
+<form id="form1" name="form1" method="post" action="">
+  <table class="table table-borderless table-striped table-hover">
+    <tr>
+      <td>Product Quanity</td>
+       {% for i in data %}
+      <td>{{ i['count(`quantity`.`pid`)']}}</td>
+      {% endfor %}
+    </tr>
+    <tr>
+      <td>Product Type</td>
+       {% for i in data %}
+      <td> {{ i['TypeName']}} </td>
+      {% endfor %}
+    </tr>
+  </table>
+</form>
+</body>
+</html>

@@ -1,0 +1,52 @@
+{% extends 'user/user_Home.html' %}
+{% block body %}
+
+<body>
+<form id="form1" name="form1" method="post" action="/profile_managment_post">
+
+<table border="0" class="table table-borderless table-striped table-hover">
+  <tr>
+    <td>UserName</td>
+    <td colspan="2"><label for="textfield"></label>
+      <input type="text" name="textfield" value="{{data['name']}}" class="form-control" /></td>
+  </tr>
+  <tr>
+    <td>Age</td>
+    <td colspan="2"><label for="textfield2"></label>
+      <input type="text" name="textfield2" value="{{data['age']}}" class="form-control" /></td>
+  </tr>
+  <tr>
+    <td>Phone</td>
+    <td colspan="2"><label for="textfield3"></label>
+      <input type="text" name="textfield3" value=" {{data['phone']}}" class="form-control" /></td>
+  </tr>
+  <tr>
+    <td>E-mail</td>
+    <td colspan="2"><label for="textfield4"></label>
+      <input type="text" name="textfield4" value="{{data['email']}}" readonly class="form-control" /></td>
+  </tr>
+  <tr>
+    <td rowspan="3">Address</td>
+    <td>Place</td>
+    <td><label for="textfield5"></label>
+      <input type="text" name="textfield5" value="{{data['place']}}" class="form-control"/></td>
+  </tr>
+  <tr>
+    <td>Post</td>
+    <td><label for="textfield6"></label>
+      <input type="text" name="textfield6" value="{{data['post']}}" class="form-control"/></td>
+  </tr>
+  <tr>
+    <td>Pin</td>
+    <td><label for="textfield7"></label>
+      <input type="text" name="textfield7" value="{{data['pin']}}" class="form-control" /></td>
+  </tr>
+  <tr>
+    <td colspan="2"><input type="submit" name="button" id="button" value="Update Profile" class="btn btn-outline-primary" /></td>
+      <!--<td> <a href="/Change_passwords#about" class="btn btn-danger" > Change Password</a> </td>-->
+  </tr>
+</table>
+</form>
+
+</body>
+{% endblock %}
