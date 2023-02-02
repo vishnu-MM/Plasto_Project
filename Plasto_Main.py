@@ -81,15 +81,19 @@ def reject_manufactures(id):
 
 
 
-@app.route('/accept_manufactures/<id>')
-def accept_manufactures(id):
+@app.route('/accept_manufactures/<id>/<email>/<passwd>')
+def accept_manufactures(id,email,passwd):
     db = Db()
-    qry="UPDATE `manufacturer` SET `status`='accept' WHERE `man_id`='"+id+"'"
-    res=db.update(qry)
+    qry1="INSERT INTO `login`(UserName,Password,Type) VALUES('"+email+"','"+passwd+"','manufacturer')"
+    res1=db.insert(qry1)
+    l=str(res1)
+    qry2="UPDATE `manufacturer` SET `man_lid` ='"+l+"',`status`='accept'  WHERE `man_id`='"+id+"' "
+    res2=db.update(qry2)
     if session['log'] == 'lin':
        return '''<script>alert('Success');window.location='/verify_manufactures'</script>'''
     else:
         return "<script>alert('Log out');window.location='/'</script>"
+
 
 
 @app.route('/approved_manufactures')
@@ -145,7 +149,7 @@ def View_User_data():
 
 @app.route('/sign_up')
 def sign_up():
-    return render_template("Retailer/Signup.html")
+    return render_template("Retailer/Ret_SignUP.html")
 
 
 
@@ -202,7 +206,7 @@ def add_user_data_post():
     productId = request.form['textfield2']
     Ptype = request.form['select']
     db = Db()
-    qry = " INSERT INTO `quantity`(`r_lid`,`pid`,`user_id`,`PtID`) VALUES('"+str(session['lid'])+"','"+productId+"','"+cardNo+"','"+Ptype+"')"
+    qry = " INSERT INTO `quantity`(`r_lid`,`pid`,`user_id`,`PtID`,`date`) VALUES('"+str(session['lid'])+"','"+productId+"','"+cardNo+"','"+Ptype+"',curdate())"
     res = db.insert(qry)
     if session['log'] == 'lin':
         return "<script>alert('Success');window.location='/add_user_data'</script>"
@@ -224,15 +228,10 @@ def Home_Manufactures():
 
 
 
-
-
-
 @app.route('/manufacturer_registration')
 def manufacturer_registration():
-    if session['log']=='lin':
-        return render_template('/Manufacturer/sign_up.html')
-    else:
-        return "<script>alert('Log out');window.location='/'</script>"
+        return render_template('Manufacturer/Reg.html')
+
 
 
 
@@ -245,13 +244,16 @@ def manufacturer_registration_post():
     place = request.form['textfield5']
     pin = request.form['textfield6']
     post = request.form['textfield7']
+    passwd = request.form['textfield10']
+    c_passwd = request.form['textfield11']
     db = Db()
-    qry = "INSERT INTO `manufacturer` (`c_name`,`prop_name`,`email`,`phone`,`place`,`pin`,`post`,`status`) VALUES ('"+cname+"','"+pro+"','"+email+"','"+phone+"','"+place+"','"+pin+"','"+post+"','Pending')"
-    res = db.insert(qry)
-    if session['log'] == 'lin':
+    if passwd==c_passwd:
+        qry = "INSERT INTO `manufacturer` (`c_name`,`prop_name`,`email`,`phone`,`place`,`pin`,`post`,`status`,`passwd`) VALUES ('"+cname+"','"+pro+"','"+email+"','"+phone+"','"+place+"','"+pin+"','"+post+"','Pending','"+passwd+"')"
+        res = db.insert(qry)
         return "<script>alert('Registration Successful');window.location='/'</script>"
     else:
-        return "<script>alert('Log out');window.location='/'</script>"
+        "<script>alert('Password dose not match');window.location='/sign_up'</script>"
+
 
 
 
@@ -356,7 +358,7 @@ def user_home():
 
 @app.route('/user_signup')
 def user_signup():
-    return render_template('User/usersign_up.html')
+    return render_template('User/Signup.html')
 
 
 
@@ -373,11 +375,12 @@ def user_signup_post():
     pin = request.form['textfield8']
     passwd = request.form['textfield10']
     c_passwd = request.form['textfield11']
+    print(gender)
     db=Db()
     if passwd==c_passwd:
-        qry="INSERT INTO `login`(UserName,Password,Type) VALUES('"+ema+"','"+passwd+"','retailer')"
+        qry="INSERT INTO `login`(UserName,Password,Type) VALUES('"+ema+"','"+passwd+"','user')"
         res=db.insert(qry)
-        qry2=" insert into user (`User_lid`,`NAME`,`age`,`gender`,`phone`,`email`,`place`,`post`,`pin`) values('"+name+"','"+Age+"','"+gender+"','"+ph+"','"+ema+"','"+place+"','"+post+"','"+pin+"') "
+        qry2=" insert into user (`User_lid`,`NAME`,`age`,`gender`,`phone`,`email`,`place`,`post`,`pin`) values('"+str(res)+"','"+name+"','"+Age+"','"+gender+"','"+ph+"','"+ema+"','"+place+"','"+post+"','"+pin+"') "
         res=db.insert(qry2)
         return redirect('/')
     else:
@@ -433,12 +436,68 @@ def profile_managment_post():
 @app.route('/product_quantity')
 def product_quantity():
     db = Db()
-    qry = "select count(`quantity`.`pid`),`quantity`.`PtID`,`producttype`.`TypeName` from `quantity` join  `producttype` on `producttype`.`ptId` = `quantity`.`PtID`  where user_id='2'  GROUP BY `PtID`  "
+    qry = "SELECT COUNT(`quantity`.`pid`),`quantity`.`PtID`,`producttype`.`TypeName` FROM `quantity` JOIN  `producttype` ON `producttype`.`ptId` = `quantity`.`PtID` WHERE MONTH(`date`)=MONTH(curdate()) AND `user_id`='" + str(session['lid']) + "' GROUP BY `PtID` "
     res = db.select(qry)
+    qry1 = "SELECT `product`.`p_name`,`producttype`.`TypeName`,`retailer`.`s_name`,`quantity`.`date` FROM `quantity` JOIN `product` ON`product`.`pid`=`quantity`.`pid` JOIN `retailer` ON `retailer`.`r_lid`=`quantity`.`r_lid` JOIN `producttype` ON `producttype`.`ptId`=`quantity`.`PtID`WHERE MONTH(`date`)=MONTH(curdate()) AND CURDATE() AND `user_id`='" + str(session['lid']) + "' "
+    res1 = db.select(qry1)
     if session['log'] == 'lin':
-        return render_template('User/product_quantity.html', data=res)
+        return render_template('User/product_quantity.html', data=res, data1=res1)
     else:
         return "<script>alert('Log out');window.location='/'</script>"
+
+
+@app.route('/product_quantity_previous/<num>')
+def product_quantity_previous(num):
+    print(num)
+    db = Db()
+    qry = "SELECT COUNT(`quantity`.`pid`),`quantity`.`PtID`,`producttype`.`TypeName` FROM `quantity` JOIN  `producttype` ON `producttype`.`ptId` = `quantity`.`PtID` WHERE `date`= DATE_ADD(curdate(), INTERVAL -1 MONTH) AND `user_id`='"+str(session['lid'])+"' GROUP BY `PtID` "
+    res = db.select(qry)
+    qry1 = "SELECT `product`.`p_name`,`producttype`.`TypeName`,`retailer`.`s_name`,`quantity`.`date` FROM `quantity` JOIN `product` ON`product`.`pid`=`quantity`.`pid` JOIN `retailer` ON `retailer`.`r_lid`=`quantity`.`r_lid` JOIN `producttype` ON `producttype`.`ptId`=`quantity`.`PtID`WHERE `date` BETWEEN DATE_ADD(CURDATE(), INTERVAL -1 MONTH) AND CURDATE() AND `user_id`='" + str(session['lid']) + "' "
+    res1 = db.select(qry1)
+    if session['log'] == 'lin':
+        return render_template('User/product_quantity_pre.html', data=res, data1=res1)
+    else:
+        return "<script>alert('Log out');window.location='/'</script>"
+
+
+
+@app.route('/product_quantity_six')
+def product_quantity_six():
+    db = Db()
+    qry = "SELECT COUNT(`quantity`.`pid`),`quantity`.`PtID`,`producttype`.`TypeName` FROM `quantity` JOIN  `producttype` ON `producttype`.`ptId` = `quantity`.`PtID` WHERE `date` BETWEEN DATE_ADD(CURDATE(), INTERVAL -6 MONTH) AND CURDATE() AND `user_id`='"+str(session['lid'])+"' GROUP BY `PtID` "
+    res = db.select(qry)
+    qry1 = "SELECT `product`.`p_name`,`producttype`.`TypeName`,`retailer`.`s_name`,`quantity`.`date` FROM `quantity` JOIN `product` ON`product`.`pid`=`quantity`.`pid` JOIN `retailer` ON `retailer`.`r_lid`=`quantity`.`r_lid` JOIN `producttype` ON `producttype`.`ptId`=`quantity`.`PtID`WHERE `date` BETWEEN DATE_ADD(CURDATE(), INTERVAL -6 MONTH) AND CURDATE() AND `user_id`='" + str(session['lid']) + "' "
+    res1 = db.select(qry1)
+    if session['log'] == 'lin':
+        return render_template('User/product_quantity_six.html', data=res, data1=res1)
+    else:
+        return "<script>alert('Log out');window.location='/'</script>"
+
+
+
+@app.route('/product_quantity_year')
+def product_quantity_year():
+    db = Db()
+    qry = "SELECT COUNT(`quantity`.`pid`),`quantity`.`PtID`,`producttype`.`TypeName` FROM `quantity` JOIN  `producttype` ON `producttype`.`ptId` = `quantity`.`PtID` WHERE `date` BETWEEN DATE_ADD(CURDATE(), INTERVAL -1 YEAR) AND CURDATE() AND `user_id`='"+str(session['lid'])+"' GROUP BY `PtID` "
+    res = db.select(qry)
+    qry1 = "SELECT `product`.`p_name`,`producttype`.`TypeName`,`retailer`.`s_name`,`quantity`.`date` FROM `quantity` JOIN `product` ON`product`.`pid`=`quantity`.`pid` JOIN `retailer` ON `retailer`.`r_lid`=`quantity`.`r_lid` JOIN `producttype` ON `producttype`.`ptId`=`quantity`.`PtID`WHERE `date` BETWEEN DATE_ADD(CURDATE(), INTERVAL -1 YEAR) AND CURDATE() AND `user_id`='"+str(session['lid'])+"' "
+    res1 = db.select(qry1)
+    if session['log'] == 'lin':
+        return render_template('User/product_quantity_year.html', data=res,data1=res1)
+    else:
+        return "<script>alert('Log out');window.location='/'</script>"
+
+
+@app.route('/view_score')
+def view_score():
+    db = Db()
+    qry=""
+    res=db.select(qry)
+    if session['log'] == 'lin':
+        return render_template(' ', data=res)
+    else:
+        return "<script>alert('Log out');window.location='/'</script>"
+
 
 
 

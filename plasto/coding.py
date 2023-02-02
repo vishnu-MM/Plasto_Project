@@ -171,7 +171,7 @@ def profile_managment_post():
 
 @app.route('/sign_up')
 def sign_up():
-    return render_template("Manufacters/Signup.html")
+    return render_template("Manufacters/Signup_N.html")
 
 
 
@@ -186,7 +186,7 @@ def sign_up_post():
     pin  = request.form['textfield7']
     Latitude = request.form['textfield8']
     Longitude = request.form['textfield9']
-    return render_template("Manufacters/Signup.html")
+    return render_template("Manufacters/Signup_N.html")
 
 
 

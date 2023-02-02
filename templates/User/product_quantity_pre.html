@@ -7,8 +7,8 @@
       <td></td>
       <td>
         <select name="select" id="select" onchange="location = this.value;">
-           <option value="/product_quantity">This Month</option>
            <option value="/product_quantity_previous/1">Previous Month</option>
+           <option value="/product_quantity">This Month</option>
            <option value="/product_quantity_six">Six Mounth</option>
            <option value="/product_quantity_year">This Year</option>
         </select>
@@ -29,9 +29,8 @@
       {% endfor %}
     </tr>
   </table>
-  <h2> Details </h2>
   <table class="table table-borderless table-striped table-hover">
-    <tr>
+   <tr>
       <td>Product</td>
       <td> Product Type</td>
       <td>Shope</td>
@@ -40,7 +39,7 @@
      {% for i in data1 %}
     <tr>
       <td>{{i['p_name']}}</td>
-      <td>{{i['TypeName']}}</td>
+      <td>{{i['Typename']}}</td>
       <td>{{i['s_name']}}</td>
       <td>{{i['date']}}</td>
     </tr>
