@@ -1,0 +1,28 @@
+<!--<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">-->
+<!--<html xmlns="http://www.w3.org/1999/xhtml">-->
+<!--<head>-->
+<!--<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />-->
+<!--<title>Untitled Document</title>-->
+<!--</head>-->
+{% extends "User/Scan_UI.html" %}
+{% block body %}
+<body>
+<h2> Scan </h2>
+<form action="qrread_post" method="post" enctype="multipart/form-data" name="form1" id="form1">
+  <table  class="table table-borderless table-striped table-hover">
+    <tr>
+      <!--<td> <input type="file" name="image" id="fileField" class="btn btn-info"/>-->
+      <td align="center"> <button style="display:block;width:120px; height:30px;" onclick="document.getElementById('getFile').click()">SCAN</button>
+  <input type='file' id="getFile" style="display:none" class=" bi-file-arrow-up">
+    </tr>
+      <tr>
+          <td><input type="file" name="image" accept="image/*" capture="environment" class=" bi-file-arrow-up"></td>
+          <!--<td><input type="file" name="image" accept="image/*" capture="environment"></td>-->
+      </tr>
+    <tr><td align="center"><input name="" type="submit" class="btn btn-info" /></td></tr>
+  </table>
+</form>
+</body>
+{% endblock %}
+<!--</html>-->
+

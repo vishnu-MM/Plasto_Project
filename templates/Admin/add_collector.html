@@ -1,0 +1,36 @@
+{% extends "Admin/Add_Coll.html"%}
+{% block body %}
+<body>
+<form id="form1" name="form1" action='/add_collector_post'  method="post">
+  <table class="table table-borderless table-striped table-hover">
+    <tr>
+      <td>Name</td>
+      <td><label>
+        <input type="text" name="textfield" id="textfield" />
+      </label></td>
+    </tr>
+    <tr>
+      <td>Email</td>
+      <td><label>
+        <input type="text" name="textfield2" id="textfield2" />
+      </label></td>
+    </tr>
+    <tr>
+      <td>Place</td>
+      <td><label>
+        <input type="text" name="textfield3" id="textfield3" />
+      </label></td>
+    </tr>
+    <tr>
+      <td>Password</td>
+      <td><label>
+        <input type="text" name="textfield4" id="textfield4" />
+      </label></td>
+    </tr>
+    <tr>
+      <td colspan="2">
+      <input type="submit" name="button" id="button" value="ADD" class="btn btn-info" /></td>
+    </tr>
+  </table>
+</form>
+{% endblock %}

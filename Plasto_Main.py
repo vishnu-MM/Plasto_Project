@@ -1,4 +1,6 @@
 from flask import *
+import smtplib
+import cv2
 from DBConnection import Db
 app = Flask(__name__)
 app.secret_key = "ghhjggm"
@@ -31,6 +33,8 @@ def login_post():
              return redirect('/Home_Retailer')
         elif res['Type']=='user':
              return redirect('/user_home')
+        elif res['Type']=='collector':
+             return redirect('/c_home')
         else:
              return "<script>alert('please check your login credentials');window.location='/'</script>"
     else:
@@ -55,6 +59,38 @@ def Home():
         return render_template("Admin/index.html")
     else:
         return "<script>alert('Log out');window.location='/'</script>"
+
+
+@app.route('/add_collector')
+def add_collector():
+    return render_template("Admin/add_collector.html")
+
+@app.route('/add_collector_post',methods=['post'])
+def add_collector_post():
+    name = request.form['textfield']
+    email = request.form['textfield2']
+    place = request.form['textfield3']
+    passwd = request.form['textfield4']
+    print(email)
+    db =Db()
+    qry = " insert into `login`(`UserName`,`Password`,`Type`) VALUES('"+email+"','"+passwd+"','collector') "
+    res = db.insert(qry)
+    qry1 = " insert into `collecter`(`c_name`,`email`,`place`,`c_lid`) VALUE('"+name+"','"+email+"','"+place+"','"+str(res)+"')  "
+    res1=db.insert(qry1)
+    rep = send_email(name,email,passwd)
+    #
+    # #-----------mail--------------------
+    # sender_email = "plastocas@outlook.com"
+    # receiver_email = "yedusankarc@gmail.com"
+    # password = "jaison2003"
+    # message = "Subject: Dear ",name," You are appointed as garbage collector in Plasto Initiative \n Your Username : ",email,"\n Password : ",passwd,"you can now log in"
+    #
+    # server = smtplib.SMTP("smtp.office365.com", 587) # Connect to Gmail's SMTP server
+    # server.starttls() # Start TLS encryption
+    # server.login(sender_email, password) # Login to the email account
+    # server.sendmail(sender_email, receiver_email, message) # Send the email
+    # server.quit() # Logout from the email account'
+    return redirect('/add_collector')
 
 
 
@@ -170,7 +206,8 @@ def sign_up_post():
         res=db.insert(qry)
         qry2="INSERT INTO retailer(`r_lid`,`s_name`,`o_name`,`phone`,`email`,`place`,`post`,`pin`) VALUES('"+str(res)+"','"+shopname+"','"+o_name+"','"+ema+"','"+ph+"','"+place+"','"+pst+"','"+pin+"')"
         res=db.insert(qry2)
-        return redirect('/')
+        return "<script>alert('Registration successful');window.location='/'</script>"
+
     else:
         "<script>alert('Password dose not match');window.location='/sign_up'</script>"
 
@@ -193,10 +230,12 @@ def add_user_data():
     db = Db()
     qry = "SELECT * FROM `producttype`"
     res = db.select(qry)
+    qry2 = "SELECT * FROM `quantity` WHERE qid=(SELECT MAX(qid) FROM `quantity`)"
+    res2 = db.selectOne(qry2)
     if session['log'] == 'lin':
-        return render_template('Retailer/addUserData.html', data=res)
+        return render_template('Retailer/addUserData.html', data=res,ud=res2)
     else:
-        return "<script>alert('Log out');window.location='/'</script>"
+        return "<script>alert('Log out');window.location='/addUserData.html'</script>"
 
 
 
@@ -206,7 +245,8 @@ def add_user_data_post():
     productId = request.form['textfield2']
     Ptype = request.form['select']
     db = Db()
-    qry = " INSERT INTO `quantity`(`r_lid`,`pid`,`user_id`,`PtID`,`date`) VALUES('"+str(session['lid'])+"','"+productId+"','"+cardNo+"','"+Ptype+"',curdate())"
+
+    qry = " INSERT INTO `quantity`(`r_lid`,`pid`,`user_id`,`PtID`,`date`,`status`) VALUES('"+str(session['lid'])+"','"+productId+"','"+cardNo+"','"+Ptype+"',curdate(),'active')"
     res = db.insert(qry)
     if session['log'] == 'lin':
         return "<script>alert('Success');window.location='/add_user_data'</script>"
@@ -382,9 +422,9 @@ def user_signup_post():
         res=db.insert(qry)
         qry2=" insert into user (`User_lid`,`NAME`,`age`,`gender`,`phone`,`email`,`place`,`post`,`pin`) values('"+str(res)+"','"+name+"','"+Age+"','"+gender+"','"+ph+"','"+ema+"','"+place+"','"+post+"','"+pin+"') "
         res=db.insert(qry2)
-        return redirect('/')
+        return "<script>alert('Registration successful');window.location='/'</script>"
     else:
-        "<script>alert('Password dose not match');window.location='/sign_up'</script>"
+        return "<script>alert('Password dose not match');window.location='/user_signup'</script>"
 
 
 
@@ -424,7 +464,7 @@ def profile_managment_post():
     pst = request.form['textfield6']
     pin = request.form['textfield7']
     db = Db()
-    qry = "  UPDATE `user` SET `name`='"+usrname+"',`age`='"+age+"',`email`='"+ema+"',`phone`='"+ph+"',`place`='"+place+"',`post`='"+pst+"',`pin`='"+pin+"' WHERE `User_lid`='"+str(session['lid'])+"'  "
+    qry = "  UPDATE `user` SET `name`='"+usrname+"',`age`='"+age+"',`email`='"+ema+"',`phone`='"+ph+"',`place`='"+place+"',`post`='"+pst+"',`pin`='"+pin+"' WHERE `User_lid`='"+str(session['lid'])+"' AND `status`='active'  "
     res = db.update(qry)
     if session['log'] == 'lin':
         return redirect("/profile_managment_view")
@@ -436,9 +476,9 @@ def profile_managment_post():
 @app.route('/product_quantity')
 def product_quantity():
     db = Db()
-    qry = "SELECT COUNT(`quantity`.`pid`),`quantity`.`PtID`,`producttype`.`TypeName` FROM `quantity` JOIN  `producttype` ON `producttype`.`ptId` = `quantity`.`PtID` WHERE MONTH(`date`)=MONTH(curdate()) AND `user_id`='" + str(session['lid']) + "' GROUP BY `PtID` "
+    qry = "SELECT COUNT(`quantity`.`pid`),`quantity`.`PtID`,`producttype`.`TypeName` FROM `quantity` JOIN  `producttype` ON `producttype`.`ptId` = `quantity`.`PtID` WHERE MONTH(`date`)=MONTH(curdate()) AND `user_id`='" + str(session['lid']) + "' AND `status`='active' GROUP BY `PtID` "
     res = db.select(qry)
-    qry1 = "SELECT `product`.`p_name`,`producttype`.`TypeName`,`retailer`.`s_name`,`quantity`.`date` FROM `quantity` JOIN `product` ON`product`.`pid`=`quantity`.`pid` JOIN `retailer` ON `retailer`.`r_lid`=`quantity`.`r_lid` JOIN `producttype` ON `producttype`.`ptId`=`quantity`.`PtID`WHERE MONTH(`date`)=MONTH(curdate()) AND CURDATE() AND `user_id`='" + str(session['lid']) + "' "
+    qry1 = "SELECT `product`.`p_name`,`producttype`.`TypeName`,`retailer`.`s_name`,`quantity`.`date` FROM `quantity` JOIN `product` ON`product`.`pid`=`quantity`.`pid` JOIN `retailer` ON `retailer`.`r_lid`=`quantity`.`r_lid` JOIN `producttype` ON `producttype`.`ptId`=`quantity`.`PtID`WHERE MONTH(`date`)=MONTH(curdate()) AND CURDATE() AND `user_id`='" + str(session['lid']) + "' AND `status`='active' "
     res1 = db.select(qry1)
     if session['log'] == 'lin':
         return render_template('User/product_quantity.html', data=res, data1=res1)
@@ -450,9 +490,9 @@ def product_quantity():
 def product_quantity_previous(num):
     print(num)
     db = Db()
-    qry = "SELECT COUNT(`quantity`.`pid`),`quantity`.`PtID`,`producttype`.`TypeName` FROM `quantity` JOIN  `producttype` ON `producttype`.`ptId` = `quantity`.`PtID` WHERE `date`= DATE_ADD(curdate(), INTERVAL -1 MONTH) AND `user_id`='"+str(session['lid'])+"' GROUP BY `PtID` "
+    qry = "SELECT COUNT(`quantity`.`pid`),`quantity`.`PtID`,`producttype`.`TypeName` FROM `quantity` JOIN  `producttype` ON `producttype`.`ptId` = `quantity`.`PtID` WHERE `date`= DATE_ADD(curdate(), INTERVAL -1 MONTH) AND `user_id`='"+str(session['lid'])+"' AND `status`='active' GROUP BY `PtID` "
     res = db.select(qry)
-    qry1 = "SELECT `product`.`p_name`,`producttype`.`TypeName`,`retailer`.`s_name`,`quantity`.`date` FROM `quantity` JOIN `product` ON`product`.`pid`=`quantity`.`pid` JOIN `retailer` ON `retailer`.`r_lid`=`quantity`.`r_lid` JOIN `producttype` ON `producttype`.`ptId`=`quantity`.`PtID`WHERE `date` BETWEEN DATE_ADD(CURDATE(), INTERVAL -1 MONTH) AND CURDATE() AND `user_id`='" + str(session['lid']) + "' "
+    qry1 = "SELECT `product`.`p_name`,`producttype`.`TypeName`,`retailer`.`s_name`,`quantity`.`date` FROM `quantity` JOIN `product` ON`product`.`pid`=`quantity`.`pid` JOIN `retailer` ON `retailer`.`r_lid`=`quantity`.`r_lid` JOIN `producttype` ON `producttype`.`ptId`=`quantity`.`PtID`WHERE `date` BETWEEN DATE_ADD(CURDATE(), INTERVAL -1 MONTH) AND CURDATE() AND `user_id`='" + str(session['lid']) + "' AND `status`='active' "
     res1 = db.select(qry1)
     if session['log'] == 'lin':
         return render_template('User/product_quantity_pre.html', data=res, data1=res1)
@@ -464,9 +504,9 @@ def product_quantity_previous(num):
 @app.route('/product_quantity_six')
 def product_quantity_six():
     db = Db()
-    qry = "SELECT COUNT(`quantity`.`pid`),`quantity`.`PtID`,`producttype`.`TypeName` FROM `quantity` JOIN  `producttype` ON `producttype`.`ptId` = `quantity`.`PtID` WHERE `date` BETWEEN DATE_ADD(CURDATE(), INTERVAL -6 MONTH) AND CURDATE() AND `user_id`='"+str(session['lid'])+"' GROUP BY `PtID` "
+    qry = "SELECT COUNT(`quantity`.`pid`),`quantity`.`PtID`,`producttype`.`TypeName` FROM `quantity` JOIN  `producttype` ON `producttype`.`ptId` = `quantity`.`PtID` WHERE `date` BETWEEN DATE_ADD(CURDATE(), INTERVAL -6 MONTH) AND CURDATE() AND `user_id`='"+str(session['lid'])+"' AND `status`='active' GROUP BY `PtID` "
     res = db.select(qry)
-    qry1 = "SELECT `product`.`p_name`,`producttype`.`TypeName`,`retailer`.`s_name`,`quantity`.`date` FROM `quantity` JOIN `product` ON`product`.`pid`=`quantity`.`pid` JOIN `retailer` ON `retailer`.`r_lid`=`quantity`.`r_lid` JOIN `producttype` ON `producttype`.`ptId`=`quantity`.`PtID`WHERE `date` BETWEEN DATE_ADD(CURDATE(), INTERVAL -6 MONTH) AND CURDATE() AND `user_id`='" + str(session['lid']) + "' "
+    qry1 = "SELECT `product`.`p_name`,`producttype`.`TypeName`,`retailer`.`s_name`,`quantity`.`date` FROM `quantity` JOIN `product` ON`product`.`pid`=`quantity`.`pid` JOIN `retailer` ON `retailer`.`r_lid`=`quantity`.`r_lid` JOIN `producttype` ON `producttype`.`ptId`=`quantity`.`PtID`WHERE `date` BETWEEN DATE_ADD(CURDATE(), INTERVAL -6 MONTH) AND CURDATE() AND `user_id`='" + str(session['lid']) + "' AND `status`='active' "
     res1 = db.select(qry1)
     if session['log'] == 'lin':
         return render_template('User/product_quantity_six.html', data=res, data1=res1)
@@ -478,9 +518,9 @@ def product_quantity_six():
 @app.route('/product_quantity_year')
 def product_quantity_year():
     db = Db()
-    qry = "SELECT COUNT(`quantity`.`pid`),`quantity`.`PtID`,`producttype`.`TypeName` FROM `quantity` JOIN  `producttype` ON `producttype`.`ptId` = `quantity`.`PtID` WHERE `date` BETWEEN DATE_ADD(CURDATE(), INTERVAL -1 YEAR) AND CURDATE() AND `user_id`='"+str(session['lid'])+"' GROUP BY `PtID` "
+    qry = "SELECT COUNT(`quantity`.`pid`),`quantity`.`PtID`,`producttype`.`TypeName` FROM `quantity` JOIN  `producttype` ON `producttype`.`ptId` = `quantity`.`PtID` WHERE `date` BETWEEN DATE_ADD(CURDATE(), INTERVAL -1 YEAR) AND CURDATE() AND `user_id`='"+str(session['lid'])+"' AND `status`='active' GROUP BY `PtID` "
     res = db.select(qry)
-    qry1 = "SELECT `product`.`p_name`,`producttype`.`TypeName`,`retailer`.`s_name`,`quantity`.`date` FROM `quantity` JOIN `product` ON`product`.`pid`=`quantity`.`pid` JOIN `retailer` ON `retailer`.`r_lid`=`quantity`.`r_lid` JOIN `producttype` ON `producttype`.`ptId`=`quantity`.`PtID`WHERE `date` BETWEEN DATE_ADD(CURDATE(), INTERVAL -1 YEAR) AND CURDATE() AND `user_id`='"+str(session['lid'])+"' "
+    qry1 = "SELECT `product`.`p_name`,`producttype`.`TypeName`,`retailer`.`s_name`,`quantity`.`date` FROM `quantity` JOIN `product` ON`product`.`pid`=`quantity`.`pid` JOIN `retailer` ON `retailer`.`r_lid`=`quantity`.`r_lid` JOIN `producttype` ON `producttype`.`ptId`=`quantity`.`PtID`WHERE `date` BETWEEN DATE_ADD(CURDATE(), INTERVAL -1 YEAR) AND CURDATE() AND `user_id`='"+str(session['lid'])+"' AND `status`='active' "
     res1 = db.select(qry1)
     if session['log'] == 'lin':
         return render_template('User/product_quantity_year.html', data=res,data1=res1)
@@ -501,8 +541,116 @@ def view_score():
 
 
 
+# ==================================================================collection============================================
 
 
 
+@app.route('/c_home')
+def c_home():
+    if session['log'] == 'lin':
+        return render_template('collector/index.html')
+    else:
+        return "<script>alert('Log out');window.location='/'</script>"
+
+
+
+
+@app.route('/collect')
+def collect():
+    db =Db()
+    qry= "  SELECT * FROM USER  WHERE `User_id` IN(SELECT `user_id` FROM `quantity`WHERE `status`='active')"
+    res = db.select(qry)
+    return render_template("collector/list.html",data=res)
+
+
+
+
+@app.route('/view_usage_c/<id>')
+def view_usage_c(id):
+    db = Db()
+    qry = "select count(`quantity`.`pid`),`quantity`.`PtID`,`producttype`.`TypeName`,`quantity`.`user_id` from `quantity` join  `producttype` on `producttype`.`ptId` = `quantity`.`PtID`  where user_id='"+id+"' and  `quantity`.`status`='active' GROUP BY `PtID`  "
+    res = db.select(qry)
+    if session['log'] == 'lin':
+        return render_template('collector/usage.html', data=res)
+    else:
+        return "<script>alert('Log out');window.location='/'</script>"
+
+
+
+@app.route('/collect_search', methods=['POST'])
+def collect_search():
+    db=Db()
+    srch = request.form['textfield']
+    qry=" SELECT * FROM USER  WHERE `User_id` IN(SELECT `user_id` FROM `quantity`WHERE `status`='active')  AND `place` LIKE '%"+srch+"%' OR `name` LIKE '%"+srch+"%' OR `User_id` LIKE '%"+srch+"%'"
+    res=db.select(qry)
+    return render_template("collector/list.html",data=res)
+
+
+
+@app.route('/remove_quantity/<ptid>/<uid>')
+def remove_quantity(ptid,uid):
+    db = Db()
+    print(ptid)
+    print(uid)
+    qry =" UPDATE quantity SET `status`='returned' WHERE `PtID`='"+ptid+"' AND `user_id`='"+uid+"'"
+    res = db.update(qry)
+    return redirect('/view_usage_c/'+uid+'')
+
+
+
+
+@app.route('/add_score_post', methods=['post'])
+def add_score_post():
+    cardNo = request.form['textfield']
+    productId = request.form['textfield2']
+    Ptype = request.form['select']
+    db = Db()
+    qry = " INSERT INTO `quantity`(`r_lid`,`pid`,`user_id`,`PtID`,`date`,`status`) VALUES('"+str(session['lid'])+"','"+productId+"','"+cardNo+"','"+Ptype+"',curdate(),'active')"
+    res = db.insert(qry)
+    if session['log'] == 'lin':
+        return "<script>alert('Success');window.location='/add_user_data'</script>"
+    else:
+        return "<script>alert('Log out');window.location='/'</script>"
+
+
+# @app.route("/send_email")
+def send_email(n,e,p):
+    print(n)
+    print(e)
+    print(p)
+    sender_email = "plastocasn@outlook.com"
+    receiver_email = e
+    password = "Prashanth@1"
+    message = "Subject: Test EmailThis is a test email sent using Python smtplib library in Flask."
+
+    server = smtplib.SMTP("smtp.office365.com", 587) # Connect to Gmail's SMTP server
+    server.starttls() # Start TLS encryption
+    server.login(sender_email, password) # Login to the email account
+    server.sendmail(sender_email, receiver_email, message) # Send the email
+    server.quit() # Logout from the email account
+    return "Email sent successfully"
+
+
+@app.route('/qrread')
+def qrread():
+    return render_template('User/scan.html')
+
+@app.route('/qrread_post', methods=['POST'])
+def qrread_post():
+    qr = request.files['image']
+    qr.save('qrcode.png')
+
+    path ='qrcode.png'
+    # path = "/static/images/" + 'qrcode.png'
+
+    filename = cv2.imread('qrcode.png')
+    detector = cv2.QRCodeDetector()
+    val, p, s, = detector.detectAndDecode(filename)
+    print(val)
+    db = Db()
+    qry = "SELECT * FROM `quantity` JOIN `user` ON `quantity`.`user_id`=`user`.`User_id` JOIN `producttype` ON `quantity`.`PtID`=`producttype`.`ptId` where user.user_id='"+val+"'"
+    res = db.selectOne(qry)
+
+    return render_template('User/view_scan.html', data=res)
 
 app.run(debug=True,host='0.0.0.0')

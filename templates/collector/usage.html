@@ -1,0 +1,23 @@
+{% extends "collector/about.html" %}
+{% block body %}
+<body>
+<h2> Product Details </h2>
+<form id="form1" name="form1" method="post" action="/collect_search">
+  <table class="table table-borderless table-striped table-hover">
+
+    <tr>
+      <td>Product Quantity</td>
+      <td>Product type</td>
+        <td></td>
+    </tr>
+    <tr>{% for i in data %}
+        <td>{{ i['count(`quantity`.`pid`)']}}</td>
+        <td> {{ i['TypeName']}} </td>
+        <td><a href="/remove_quantity/{{ i['PtID'] }}/{{i['user_id']}}" onclick="return confirm('Is this item collected')" class="btn btn-danger" > Mark as collected</a></td>
+
+    </tr>
+      {% endfor %}
+  </table>
+</form>
+</body>
+{% endblock %}

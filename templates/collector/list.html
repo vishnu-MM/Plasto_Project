@@ -1,0 +1,36 @@
+{% extends "collector/about.html" %}
+{% block body %}
+<body>
+<h2> Users List </h2>
+<form id="form1" name="form1" method="post" action="/collect_search">
+   <table class="table table-borderless table-striped table-hover">
+    <tr>
+      <td><input type="text" name="textfield" id="textfield" class="form-control"/></td>
+      <td><input type="submit" name="button" id="button" value="Search" class="btn btn-outline-success"/></td>
+    </tr>
+  </table>
+  <table class="table table-borderless table-striped table-hover">
+
+    <tr>
+      <td>Sno</td>
+      <td>Name</td>
+      <td>Phone</td>
+      <td>Email</td>
+      <td>Address</td>
+      <td>&nbsp;</td>
+    </tr>
+    <tr>
+      {% for i in data %}
+      <td>{{loop.index}}</td>
+      <td>{{i['name']}}</td>
+      <td>{{i['phone']}}</td>
+      <td>{{i['email']}}</td>
+        <td>{{i['place']}},{{i['post']}},{{i['pin']}}</td>
+      <td><a href="/view_usage_c/{{ i['User_id'] }}" class="btn btn-danger">View usage</a></td>
+    </tr>
+      {% endfor %}
+  </table>
+</form>
+</body>
+
+{% endblock %}

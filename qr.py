@@ -14,4 +14,4 @@ def scan():
         qr_data = decoded_data[0].data.decode()
         # Do something with the QR code data
         # ...
-    return render_template('scan.html')
+    return render_template('User/scan.html')

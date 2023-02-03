@@ -41,11 +41,15 @@ function hideURLbar(){ window.scrollTo(0,1); } </script>
 					<label class="head">Phone Number<span class="w3l-star"> * </span></label>
 					<input type="text"  name="textfield4" placeholder="" required="">
 				</div>
-				<div class="w3l-date">
-					<label class="head">Birth Date<span class="w3l-star"> * </span></label>
-						<div class="styled-input">
-							<input class="date" id="datepicker" name="textfield2" type="text" value="MM/DD/YYYY" onfocus="this.value = '';" onblur="if (this.value == '') {this.value = 'MM/DD/YYYY';}" required="">
-						</div>
+				<!--<div class="w3l-date">-->
+					<!--<label class="head">Birth Date<span class="w3l-star"> * </span></label>-->
+						<!--<div class="styled-input">-->
+							<!--<input class="date" id="datepicker" name="textfield2" type="text" value="MM/DD/YYYY" onfocus="this.value = '';" onblur="if (this.value == '') {this.value = 'MM/DD/YYYY';}" required="">-->
+						<!--</div>-->
+				<div class="w3l-sym">
+					<label class="head">Age<span class="w3l-star"> * </span></label>
+					<input type="text" name="textfield2" placeholder="" required="">
+			</div>
 					</div>	
 			<div class="clear"></div>
 			<div class="gender">
@@ -62,11 +66,11 @@ function hideURLbar(){ window.scrollTo(0,1); } </script>
 			<div class="w3l-lef1">
 				<h3>Address</h3> <br>
 				<div class="w3l-num">
-					<label class="head">City<span class="w3l-star"> * </span></label>
+					<label class="head">Place<span class="w3l-star"> * </span></label>
 					<input type="text"  name="textfield6" placeholder="" required="">
 				</div>
 			<div class="w3l-sym">
-					<label class="head">State<span class="w3l-star"> * </span></label>
+					<label class="head">Post<span class="w3l-star"> * </span></label>
 					<input type="text" name="textfield7" placeholder="" required="">
 			</div>
 			<div class="clear"></div>
@@ -101,10 +105,10 @@ function hideURLbar(){ window.scrollTo(0,1); } </script>
 							<div class="w3l-lef1">
 				<h3>Registration For</h3>
 				<div class="w3l-num">
-					<a hef=""> Manufactures </a>
+					<a href="/manufacturer_registration"> Manufactures </a>
 				</div>
 			<div class="w3l-sym">
-					<a hef=""> Retailers </a>
+					<a href="/sign_up"> Retailers </a>
 			</div>
 				</div>
 		</form>
